@@ -22,7 +22,8 @@ ratpack {
                         def builder = new JsonBuilder()
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString(),
-                                endTime: stopwatch?.endTime?.toString()
+                                endTime: stopwatch?.endTime?.toString(),
+                                duration: stopwatch?.duration
                         render builder.toPrettyString()
                     }
                     post {
