@@ -1,0 +1,13 @@
+language: groovy
+jdk:
+  - oraclejdk8
+
+install: gradle assemble
+
+before_script:
+  - gradle run &
+  - sleep 3
+
+script:
+  - gradle test -i
+  - gradle integrationTest -i

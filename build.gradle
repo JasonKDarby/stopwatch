@@ -3,7 +3,7 @@ import org.apache.commons.io.FileUtils
 
 ext {
     ext {
-        chromeDriverVersion = "2.8"
+        phantomJsVersion = '1.9.7'
     }
 }
 
@@ -38,7 +38,9 @@ dependencies {
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile "org.gebish:geb-spock:0.10.0"
-    testCompile "org.seleniumhq.selenium:selenium-chrome-driver:2.43.1"
+    testCompile("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {
+        transitive = false
+    }
     testCompile "org.seleniumhq.selenium:selenium-support:2.43.1"
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
 }
@@ -53,40 +55,59 @@ sourceSets {
     }
 }
 
-task downloadChromeDriver {
-    def outputFile = file("$buildDir/webdriver/chromedriver.zip")
-    inputs.property("chromeDriverVersion", chromeDriverVersion)
-    outputs.file(outputFile)
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
 
-    doLast {
-        def driverOsFilenamePart
-        if(Os.isFamily(Os.FAMILY_WINDOWS)) {
-            driverOsFilenamePart = "win32"
-        } else if(Os.isFamily(Os.FAMILY_MAC)) {
-            driverOsFilenamePart = "mac32"
-        } else if(Os.isFamily(Os.FAMILY_UNIX)) {
-            driverOsFilenamePart = Os.isArch("amd64") ? "linux64" : "linux32"
-        }
-        FileUtils.copyURLToFile(new URL("http://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${driverOsFilenamePart}.zip"), outputFile)
+        info.events = ["failed", "skipped"]
     }
 }
 
-task unzipChromeDriver(type: Copy) {
-    def outputDir = file("$buildDir/webdriver/chromedriver")
-    dependsOn downloadChromeDriver
+task downloadPhantomJs {
+    def osFilenamePart
+    if(Os.isFamily(Os.FAMILY_WINDOWS)) {
+        osFilenamePart = "windows.zip"
+    } else if(Os.isFamily(Os.FAMILY_MAC)) {
+        osFilenamePart = "macosx.zip"
+    } else if(Os.isFamily(Os.FAMILY_UNIX)) {
+        osFilenamePart = Os.isArch("amd64") ? "linux-x86_64.tar.bz2" : "linux-i686.tar.bz2"
+    }
+
+    def filename = "phantomjs-$phantomJsVersion-$osFilenamePart"
+    def outputFile = file("$buildDir/webdriver/$filename")
+    inputs.property("phantomJsVersion", phantomJsVersion)
+    outputs.file(outputFile)
+
+    doLast {
+        FileUtils.copyURLToFile(new URL("https://bitbucket.org/ariya/phantomjs/downloads/$filename"), outputFile)
+    }
+}
+
+task unzipPhantomJs(type: Copy) {
+    def outputDir = file("$buildDir/webdriver/phantomjs")
+    dependsOn downloadPhantomJs
     outputs.dir(outputDir)
 
-    from(zipTree(downloadChromeDriver.outputs.files.singleFile))
+    def archive = downloadPhantomJs.outputs.files.singleFile
+
+    from(Os.isFamily(Os.FAMILY_MAC) || Os.isFamily(Os.FAMILY_WINDOWS) ? zipTree(archive) : tarTree(archive))
     into(outputDir)
+    eachFile { FileCopyDetails fcp ->
+        fcp.relativePath = new RelativePath(!fcp.directory, *fcp.relativePath.segments[1..-1])
+    }
 }
 
 task integrationTest(type: Test) {
-    dependsOn unzipChromeDriver
+    dependsOn unzipPhantomJs
 
     group = 'verification'
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
 
-    def chromedriverFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "chromedriver.exe" : "chromedriver"
-    systemProperty "webdriver.chrome.driver", new File(unzipChromeDriver.outputs.files.singleFile, chromedriverFilename).absolutePath
+    def phantomJsFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "phantomjs.exe" : "bin/phantomjs"
+    systemProperty "phantomjs.binary.path", new File(unzipPhantomJs.outputs.files.singleFile, phantomJsFilename).absolutePath
+
+    systemProperty "geb.env", "phantomJs"
 }
+
