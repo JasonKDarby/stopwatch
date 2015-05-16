@@ -55,6 +55,15 @@ sourceSets {
     }
 }
 
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
+
+        info.events = ["failed", "skipped"]
+    }
+}
+
 task downloadPhantomJs {
     def osFilenamePart
     if(Os.isFamily(Os.FAMILY_WINDOWS)) {
