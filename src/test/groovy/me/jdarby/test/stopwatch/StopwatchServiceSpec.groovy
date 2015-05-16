@@ -40,7 +40,7 @@ class StopwatchServiceSpec extends Specification {
         stopwatch1.id != null && !stopwatch1.id.empty && stopwatch1.id != stopwatch0.id
         stopwatch1.startTime.isAfter(then)
         //This can likely be better
-        stopwatch1.duration > controlMillis*0.95 && stopwatch1.duration < controlMillis*1.05
+        stopwatch1.duration > controlMillis*0.80 && stopwatch1.duration < controlMillis*1.20
     }
 
     def "get stopwatch"() {
