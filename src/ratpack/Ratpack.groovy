@@ -13,26 +13,28 @@ ratpack {
     }
 
     handlers { StopwatchService sws ->
-        prefix("stopwatch") {
+        prefix("api") {
 
             handler(":id") {
                 byMethod {
                     get {
-                        Map stopwatch = sws.get(pathTokens["id"])
+                        Map stopwatch = sws.get(pathTokens["id"]) ?: clientError(404)
                         def builder = new JsonBuilder()
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString(),
                                 endTime: stopwatch?.endTime?.toString(),
                                 duration: stopwatch?.duration
+                        response.contentType('application/json')
                         render builder.toPrettyString()
                     }
                     post {
-                        Map stopwatch = sws.stop(pathTokens["id"])
+                        Map stopwatch = sws.stop(pathTokens["id"]) ?: clientError(404)
                         JsonBuilder builder = new JsonBuilder()
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString(),
                                 endTime: stopwatch.endTime.toString(),
                                 duration: stopwatch.duration
+                        response.contentType('application/json')
                         render builder.toPrettyString()
                     }
                 }
@@ -50,6 +52,7 @@ ratpack {
                         def builder = new JsonBuilder()
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString()
+                        response.contentType('application/json')
                         render builder.toPrettyString()
                     }
                 }
