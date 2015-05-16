@@ -9,5 +9,5 @@ before_script:
   - sleep 3
 
 script:
-  - gradle test
-  - gradle integrationTest
+  - gradle test -i
+  - gradle integrationTest -i
