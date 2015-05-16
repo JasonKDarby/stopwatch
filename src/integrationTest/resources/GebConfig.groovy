@@ -1,9 +1,14 @@
-import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.phantomjs.PhantomJSDriver
 
 baseUrl = "http://localhost:5050/"
 reportsDir = "build/geb-reports"
-driver = "chrome"
 
 waiting {
     timeout = 2
+}
+
+environments {
+    phantomJs {
+        driver = { new PhantomJSDriver() }
+    }
 }
