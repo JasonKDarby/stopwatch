@@ -1,7 +1,8 @@
 package me.jdarby.integrationtest.stopwatch
 
 import groovyx.net.http.RESTClient
-import java.time.LocalDateTime
+
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 import geb.spock.GebReportingSpec
 import spock.lang.Shared
@@ -23,7 +24,7 @@ class StopwatchSpec extends GebReportingSpec {
         resp.status == 200
 
         UUID.fromString(start.id)
-        ChronoUnit.SECONDS.between(LocalDateTime.parse(start.startTime), LocalDateTime.now()) <= 1
+        ChronoUnit.SECONDS.between(Instant.parse(start.startTime), Instant.now()) <= 1
     }
 
     def "create a stopwatch stop record"() {
@@ -40,7 +41,7 @@ class StopwatchSpec extends GebReportingSpec {
 
         UUID.fromString(stop.id)
         stop.startTime == start.startTime
-        ChronoUnit.SECONDS.between(LocalDateTime.parse(stop.startTime), LocalDateTime.parse(stop.endTime)) <= 1
+        ChronoUnit.SECONDS.between(Instant.parse(stop.startTime), Instant.parse(stop.endTime)) <= 1
         stop.duration <= 1000
     }
 
@@ -65,10 +66,10 @@ class StopwatchSpec extends GebReportingSpec {
 
         UUID.fromString(start0.id)
         UUID.fromString(stop0.id)
-        LocalDateTime.parse(start0.startTime)
-        LocalDateTime.parse(stop0.startTime)
+        Instant.parse(start0.startTime)
+        Instant.parse(stop0.startTime)
         start0.endTime == null
-        LocalDateTime.parse(stop0.endTime)
+        Instant.parse(stop0.endTime)
         start0.duration == null
         stop0.duration <= 1000
     }
