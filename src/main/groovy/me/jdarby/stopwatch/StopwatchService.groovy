@@ -1,6 +1,6 @@
 package me.jdarby.stopwatch
 
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class StopwatchService {
@@ -9,7 +9,7 @@ class StopwatchService {
     private List stopwatches = []
 
     def start() {
-        def stopwatch = [id: UUID.randomUUID().toString(), startTime: LocalDateTime.now()]
+        def stopwatch = [id: UUID.randomUUID().toString(), startTime: Instant.now()]
         stopwatches << stopwatch
         stopwatch
     }
@@ -18,7 +18,7 @@ class StopwatchService {
     def stop(String id) {
         def stopwatch0 = stopwatches.find { it.id == id && it.endTime == null }
         if(stopwatch0 == null) return null
-        LocalDateTime endTime = LocalDateTime.now()
+        Instant endTime = Instant.now()
         def stopwatch1 = [
                 id: UUID.randomUUID().toString(),
                 startTime: stopwatch0.startTime,

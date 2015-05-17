@@ -13,6 +13,13 @@ ratpack {
     }
 
     handlers { StopwatchService sws ->
+
+        get {
+            render groovyMarkupTemplate("stopwatch/stopwatch.gtpl")
+        }
+
+        assets "public"
+
         prefix("api") {
 
             handler(":id") {
@@ -42,11 +49,6 @@ ratpack {
 
             handler {
                 byMethod {
-                    get {
-                        //TODO: cleanup index page
-                        render groovyMarkupTemplate("index.gtpl", title: "My Ratpack App")
-                    }
-
                     post {
                         Map stopwatch = sws.start()
                         def builder = new JsonBuilder()
@@ -57,9 +59,6 @@ ratpack {
                     }
                 }
             }
-
-            assets "public"
-
         }
     }
 }
