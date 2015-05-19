@@ -16,11 +16,10 @@ html {
   }
   body {
 
-    div(class: 'pure-g') {
-      div(class: 'pure-u-1-4', '')
-      button(class: 'pure-u-1-4 pure-button', id: 'startButton', 'Start')
-      button(class: 'pure-u-1-4 pure-button', id: 'stopButton', 'Stop')
-      div(class: 'pure-u-1-4', '')
+    div(id: 'controls') {
+      button(class: 'pure-button', id: 'startButton', 'Start')
+      div(class: 'spacer', '')
+      button(class: 'pure-button', id: 'stopButton', 'Stop')
     }
 
     div(class: 'pure-g') {

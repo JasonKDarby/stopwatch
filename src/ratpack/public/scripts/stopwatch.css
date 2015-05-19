@@ -2,3 +2,13 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+.spacer {
+  width: 10em;
+}
+
+#controls {
+  display: inline-block;
+  margin-left: auto;
+  margin-right: auto;
+}

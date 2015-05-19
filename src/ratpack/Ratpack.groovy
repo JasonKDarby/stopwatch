@@ -15,7 +15,7 @@ ratpack {
     handlers { StopwatchService sws ->
 
         get {
-            render groovyMarkupTemplate("stopwatch/stopwatch.gtpl")
+            render groovyMarkupTemplate("stopwatch/basicStopwatch.gtpl")
         }
 
         assets "public"
