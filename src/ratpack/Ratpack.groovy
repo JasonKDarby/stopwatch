@@ -26,18 +26,16 @@ ratpack {
                 byMethod {
                     get {
                         List children = sws.findChildren(pathTokens["id"]) ?: clientError(404)
-                        println children
-                        List formattedChildren = children.collect { stopwatch ->
+                        def builder = new JsonBuilder()
+                        builder children.collect { stopwatch ->
                             [
-                                id: stopwatch.id,
-                                startTime: stopwatch.startTime.toString(),
-                                endTime: stopwatch.endTime.toString(),
-                                duration: stopwatch.duration,
-                                parentId: stopwatch.parentId
+                                    id: stopwatch.id,
+                                    startTime: stopwatch.startTime.toString(),
+                                    endTime: stopwatch.endTime.toString(),
+                                    duration: stopwatch.duration,
+                                    parentId: stopwatch.parentId
                             ]
                         }
-                        def builder = new JsonBuilder()
-                        builder formattedChildren
                         response.contentType('application/json')
                         render builder.toPrettyString()
                     }
