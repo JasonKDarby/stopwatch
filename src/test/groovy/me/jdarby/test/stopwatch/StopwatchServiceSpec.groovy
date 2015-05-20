@@ -50,10 +50,26 @@ class StopwatchServiceSpec extends Specification {
         Instant then = Instant.now()
 
         when:
-        def stopwatch1 = sws.get(stopwatch0.id)
+        def stopwatch1 = sws.findStopwatch(stopwatch0.id)
 
         then:
         stopwatch1 == stopwatch0
+    }
+
+    def "get child records"() {
+        given:
+        StopwatchService sws = new StopwatchService()
+        def parent = sws.start()
+        10.times {
+            sws.stop(parent.id)
+        }
+
+        when:
+        def children = sws.findChildren(parent.id)
+
+        then:
+        children.size == 10
+        children.each { assert it.parentId == parent.id }
     }
 
 }
