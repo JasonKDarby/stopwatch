@@ -9,9 +9,11 @@ There are very few calls.  It's a very small service, a micro-service?
 * POST /stopwatch
   - 'starts' a stopwatch.  It just stores a record with the current time.
 * POST /stopwatch/:id
-  - 'stops' a stopwatch.  It stores a record with the start time of the record with the provided id, the current time as the end time, and the difference as the duration in milliseconds.
+  - 'stops' a stopwatch.  It stores a record with the provided id as the parentId, start time of the record with the provided id, the current time as the end time, and the difference as the duration in milliseconds.
 * GET /stopwatch/:id
   - Returns the start time, end time, and duration of the record with the provided id.
+* GET /stopwatch/:id/children
+  - Returns the 'children' of a record, which are all of the records created by 'stopping' a given record.
 
 The implementation is immutable, so the id returned when 'stopping' a stopwatch will be different from the id of the stopwatch you told it to 'stop'. This limits the capabilities pretty drastically and may need reconsideration for functionality but it enables very simple persistence and scalability.
 
