@@ -22,15 +22,37 @@ ratpack {
 
         prefix("api") {
 
-            handler(":id") {
+            handler(":id/children") {
                 byMethod {
                     get {
-                        Map stopwatch = sws.get(pathTokens["id"]) ?: clientError(404)
+                        List children = sws.findChildren(pathTokens["id"]) ?: clientError(404)
+                        def builder = new JsonBuilder()
+                        builder children.collect { stopwatch ->
+                            [
+                                    id: stopwatch.id,
+                                    startTime: stopwatch.startTime.toString(),
+                                    endTime: stopwatch.endTime.toString(),
+                                    duration: stopwatch.duration,
+                                    parentId: stopwatch.parentId
+                            ]
+                        }
+                        response.contentType('application/json')
+                        render builder.toPrettyString()
+                    }
+                }
+            }
+
+            handler(":id") {
+
+                byMethod {
+                    get {
+                        Map stopwatch = sws.findStopwatch(pathTokens["id"]) ?: clientError(404)
                         def builder = new JsonBuilder()
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString(),
                                 endTime: stopwatch?.endTime?.toString(),
-                                duration: stopwatch?.duration
+                                duration: stopwatch?.duration,
+                                parentId: stopwatch?.parentId
                         response.contentType('application/json')
                         render builder.toPrettyString()
                     }
@@ -40,7 +62,8 @@ ratpack {
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString(),
                                 endTime: stopwatch.endTime.toString(),
-                                duration: stopwatch.duration
+                                duration: stopwatch.duration,
+                                parentId: stopwatch.parentId
                         response.contentType('application/json')
                         render builder.toPrettyString()
                     }

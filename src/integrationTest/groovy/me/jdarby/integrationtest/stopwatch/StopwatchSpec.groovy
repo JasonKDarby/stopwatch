@@ -51,8 +51,6 @@ class StopwatchSpec extends GebReportingSpec {
         def stop = client.post(path: "${start.id}").data
 
         when:
-        //def something = [start, stop].collect { record -> client.get(path: "${record.id}").data }
-        //def resp0, resp1 = something
         def resp0 = client.get(path: "${start.id}")
         def resp1 = client.get(path: "${stop.id}")
         def start0 = resp0.data
@@ -72,6 +70,22 @@ class StopwatchSpec extends GebReportingSpec {
         Instant.parse(stop0.endTime)
         start0.duration == null
         stop0.duration <= 1000
+    }
+
+    def "get children of a stopwatch"() {
+        given:
+        def parent = client.post([:]).data
+        10.times {
+            client.post(path: "${parent.id}")
+        }
+
+        when:
+        def children = client.get(path: "${parent.id}/children").data
+        println children
+
+        then:
+        children.size == 10
+        children.each { assert it.parentId == parent.id }
     }
 
 }

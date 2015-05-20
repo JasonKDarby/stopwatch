@@ -23,15 +23,22 @@ class StopwatchService {
                 id: UUID.randomUUID().toString(),
                 startTime: stopwatch0.startTime,
                 endTime: endTime,
-                duration: ChronoUnit.MILLIS.between(stopwatch0.startTime, endTime)
+                duration: ChronoUnit.MILLIS.between(stopwatch0.startTime, endTime),
+                parentId: stopwatch0.id
         ]
         stopwatches << stopwatch1
         stopwatch1
     }
 
     //TODO: this should either just return null (or equivalent (option?)) or throw an error
-    def get(String id) {
-        def stopwatch = stopwatches.find { it.id == id }
-        stopwatch
+    def findStopwatch(String id) {
+        stopwatches.find { it.id == id }
     }
+
+    def findChildren(String parentId) {
+        if(parentId == null) return null
+        stopwatches.findAll { it.parentId == parentId }
+    }
+
+
 }
