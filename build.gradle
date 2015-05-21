@@ -10,11 +10,13 @@ ext {
 buildscript {
     repositories {
         jcenter()
+        maven { url 'http://clojars.org/repo' }
     }
     dependencies {
         classpath "io.ratpack:ratpack-gradle:0.9.16"
         classpath "com.github.jengelman.gradle.plugins:shadow:1.2.1"
         classpath "commons-io:commons-io:2.4"
+        classpath 'clojuresque:clojuresque:1.7.0'
     }
 }
 
@@ -22,9 +24,11 @@ apply plugin: "io.ratpack.ratpack-groovy"
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "idea"
 apply plugin: "eclipse"
+apply plugin: "clojure"
 
 repositories {
     jcenter()
+    clojarsRepo()
 }
 
 dependencies {
@@ -43,6 +47,9 @@ dependencies {
     }
     testCompile "org.seleniumhq.selenium:selenium-support:2.43.1"
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
+
+    compile "org.clojure:clojure:1.6.0"
+    compile "org.clojure:tools.nrepl:0.2.10"
 }
 
 sourceSets {
@@ -111,3 +118,7 @@ task integrationTest(type: Test) {
     systemProperty "geb.env", "phantomJs"
 }
 
+clojure {
+    warnOnReflection = true
+    aotCompile = false
+}

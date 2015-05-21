@@ -1,3 +1,5 @@
+import clojure.java.api.Clojure
+import clojure.lang.IFn
 import groovy.json.JsonBuilder
 import me.jdarby.stopwatch.StopwatchModule
 import me.jdarby.stopwatch.StopwatchService
@@ -53,6 +55,10 @@ ratpack {
                                 endTime: stopwatch?.endTime?.toString(),
                                 duration: stopwatch?.duration,
                                 parentId: stopwatch?.parentId
+                        IFn require = Clojure.var("clojure.core", "require")
+                        require.invoke(Clojure.read("me.jdarby.Example"))
+                        IFn test = Clojure.var("me.jdarby.Example", "-hello")
+                        println "Clojure result: "+test.invoke('Jason')
                         response.contentType('application/json')
                         render builder.toPrettyString()
                     }
