@@ -1,7 +1,10 @@
 import groovy.json.JsonBuilder
 import me.jdarby.stopwatch.StopwatchModule
 import me.jdarby.stopwatch.StopwatchService
+import me.jdarby.stopwatch.renderers.ListRenderer
+import me.jdarby.stopwatch.renderers.MapRenderer
 import ratpack.groovy.template.MarkupTemplateModule
+import ratpack.registry.Registries
 
 import static ratpack.groovy.Groovy.groovyMarkupTemplate
 import static ratpack.groovy.Groovy.ratpack
@@ -13,6 +16,9 @@ ratpack {
     }
 
     handlers { StopwatchService sws ->
+
+        register(Registries.just(new MapRenderer()))
+        register(Registries.just(new ListRenderer()))
 
         get {
             render groovyMarkupTemplate("stopwatch/stopwatch.gtpl")
@@ -26,18 +32,8 @@ ratpack {
                 byMethod {
                     get {
                         List children = sws.findChildren(pathTokens["id"]) ?: clientError(404)
-                        def builder = new JsonBuilder()
-                        builder children.collect { stopwatch ->
-                            [
-                                    id: stopwatch.id,
-                                    startTime: stopwatch.startTime.toString(),
-                                    endTime: stopwatch.endTime.toString(),
-                                    duration: stopwatch.duration,
-                                    parentId: stopwatch.parentId
-                            ]
-                        }
                         response.contentType('application/json')
-                        render builder.toPrettyString()
+                        render children
                     }
                 }
             }
@@ -47,25 +43,13 @@ ratpack {
                 byMethod {
                     get {
                         Map stopwatch = sws.findStopwatch(pathTokens["id"]) ?: clientError(404)
-                        def builder = new JsonBuilder()
-                        builder id: stopwatch.id,
-                                startTime: stopwatch.startTime.toString(),
-                                endTime: stopwatch?.endTime?.toString(),
-                                duration: stopwatch?.duration,
-                                parentId: stopwatch?.parentId
                         response.contentType('application/json')
-                        render builder.toPrettyString()
+                        render stopwatch
                     }
                     post {
                         Map stopwatch = sws.stop(pathTokens["id"]) ?: clientError(404)
-                        JsonBuilder builder = new JsonBuilder()
-                        builder id: stopwatch.id,
-                                startTime: stopwatch.startTime.toString(),
-                                endTime: stopwatch.endTime.toString(),
-                                duration: stopwatch.duration,
-                                parentId: stopwatch.parentId
                         response.contentType('application/json')
-                        render builder.toPrettyString()
+                        render stopwatch
                     }
                 }
             }
@@ -74,11 +58,8 @@ ratpack {
                 byMethod {
                     post {
                         Map stopwatch = sws.start()
-                        def builder = new JsonBuilder()
-                        builder id: stopwatch.id,
-                                startTime: stopwatch.startTime.toString()
                         response.contentType('application/json')
-                        render builder.toPrettyString()
+                        render stopwatch
                     }
                 }
             }
