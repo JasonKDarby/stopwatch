@@ -1,6 +1,7 @@
 import groovy.json.JsonBuilder
 import me.jdarby.stopwatch.StopwatchModule
 import me.jdarby.stopwatch.StopwatchService
+import me.jdarby.stopwatch.handlers.MyHandlers
 import ratpack.groovy.template.MarkupTemplateModule
 
 import static ratpack.groovy.Groovy.groovyMarkupTemplate
@@ -11,6 +12,8 @@ ratpack {
         add MarkupTemplateModule
         add StopwatchModule
     }
+
+    MyHandlers myHandlers = new MyHandlers()
 
     handlers { StopwatchService sws ->
 
@@ -77,7 +80,8 @@ ratpack {
                         def builder = new JsonBuilder()
                         builder id: stopwatch.id,
                                 startTime: stopwatch.startTime.toString()
-                        response.contentType('application/json')
+                        //response.contentType('application/json')
+                        context.insert(myHandlers.contentTypeJson)
                         render builder.toPrettyString()
                     }
                 }
