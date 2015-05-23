@@ -1,16 +1,16 @@
 package me.jdarby.integrationtest.stopwatch
 
 import groovyx.net.http.RESTClient
+import spock.lang.Specification
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import geb.spock.GebReportingSpec
 import spock.lang.Shared
 
-class StopwatchSpec extends GebReportingSpec {
+class StopwatchSpec extends Specification {
 
     @Shared
-    private def restUrl = "${browser.baseUrl}api/"
+    private def restUrl = "http://localhost:5050/api/"
 
     private RESTClient client = new RESTClient(restUrl)
 

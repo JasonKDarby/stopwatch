@@ -1,12 +1,3 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-import org.apache.commons.io.FileUtils
-
-ext {
-    ext {
-        phantomJsVersion = '1.9.7'
-    }
-}
-
 buildscript {
     repositories {
         jcenter()
@@ -37,11 +28,6 @@ dependencies {
     runtime 'org.slf4j:slf4j-simple:1.7.12'
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
-    testCompile "org.gebish:geb-spock:0.10.0"
-    testCompile("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {
-        transitive = false
-    }
-    testCompile "org.seleniumhq.selenium:selenium-support:2.43.1"
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
 }
 
@@ -64,50 +50,9 @@ test {
     }
 }
 
-task downloadPhantomJs {
-    def osFilenamePart
-    if(Os.isFamily(Os.FAMILY_WINDOWS)) {
-        osFilenamePart = "windows.zip"
-    } else if(Os.isFamily(Os.FAMILY_MAC)) {
-        osFilenamePart = "macosx.zip"
-    } else if(Os.isFamily(Os.FAMILY_UNIX)) {
-        osFilenamePart = Os.isArch("amd64") ? "linux-x86_64.tar.bz2" : "linux-i686.tar.bz2"
-    }
-
-    def filename = "phantomjs-$phantomJsVersion-$osFilenamePart"
-    def outputFile = file("$buildDir/webdriver/$filename")
-    inputs.property("phantomJsVersion", phantomJsVersion)
-    outputs.file(outputFile)
-
-    doLast {
-        FileUtils.copyURLToFile(new URL("https://bitbucket.org/ariya/phantomjs/downloads/$filename"), outputFile)
-    }
-}
-
-task unzipPhantomJs(type: Copy) {
-    def outputDir = file("$buildDir/webdriver/phantomjs")
-    dependsOn downloadPhantomJs
-    outputs.dir(outputDir)
-
-    def archive = downloadPhantomJs.outputs.files.singleFile
-
-    from(Os.isFamily(Os.FAMILY_MAC) || Os.isFamily(Os.FAMILY_WINDOWS) ? zipTree(archive) : tarTree(archive))
-    into(outputDir)
-    eachFile { FileCopyDetails fcp ->
-        fcp.relativePath = new RelativePath(!fcp.directory, *fcp.relativePath.segments[1..-1])
-    }
-}
-
 task integrationTest(type: Test) {
-    dependsOn unzipPhantomJs
-
     group = 'verification'
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
-
-    def phantomJsFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "phantomjs.exe" : "bin/phantomjs"
-    systemProperty "phantomjs.binary.path", new File(unzipPhantomJs.outputs.files.singleFile, phantomJsFilename).absolutePath
-
-    systemProperty "geb.env", "phantomJs"
 }
 
