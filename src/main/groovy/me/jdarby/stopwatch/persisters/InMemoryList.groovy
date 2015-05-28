@@ -1,5 +1,7 @@
 package me.jdarby.stopwatch.persisters
 
+import me.jdarby.stopwatch.StopwatchRecord
+
 import javax.inject.Inject
 
 /**
@@ -7,7 +9,7 @@ import javax.inject.Inject
  */
 class InMemoryList implements Persister {
 
-    private List theList
+    private List<StopwatchRecord> theList
 
     @Inject
     InMemoryList() {
@@ -15,17 +17,17 @@ class InMemoryList implements Persister {
     }
 
     @Override
-    def leftShift(Object thing) {
-        theList << thing
+    def addRecord(StopwatchRecord stopwatchRecord) {
+        theList << stopwatchRecord
     }
 
     @Override
-    def find(Closure c) {
-        theList.find(c)
+    def getById(String id) {
+        theList.find { it.id == id }
     }
 
     @Override
-    def findAll(Closure c) {
-        theList.findAll(c)
+    def getChildrenByParentId(String id) {
+        theList.findAll { it.parentId == id }
     }
 }

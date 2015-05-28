@@ -1,5 +1,7 @@
 package me.jdarby.test.stopwatch
 
+import me.jdarby.stopwatch.StopwatchRecord
+import me.jdarby.stopwatch.persisters.AWSDynamoDBPersister
 import me.jdarby.stopwatch.persisters.InMemoryList
 import me.jdarby.stopwatch.StopwatchService
 import spock.lang.Specification
@@ -12,11 +14,11 @@ class StopwatchServiceSpec extends Specification {
 
     def "start stopwatch"() {
         given:
-        StopwatchService sws = new StopwatchService(new InMemoryList())
+        StopwatchService sws = new StopwatchService(new AWSDynamoDBPersister())
         Instant then = Instant.now()
 
         when:
-        def stopwatch = sws.start()
+        StopwatchRecord stopwatch = sws.start()
 
         then:
         stopwatch.id != null && !stopwatch.id.empty
@@ -25,7 +27,7 @@ class StopwatchServiceSpec extends Specification {
 
     def "stop stopwatch"() {
         given:
-        StopwatchService sws = new StopwatchService(new InMemoryList())
+        StopwatchService sws = new StopwatchService(new AWSDynamoDBPersister())
         Instant then = Instant.now()
         Thread.sleep(1)
         def stopwatch0 = sws.start()
@@ -46,9 +48,8 @@ class StopwatchServiceSpec extends Specification {
 
     def "get stopwatch"() {
         given:
-        StopwatchService sws = new StopwatchService(new InMemoryList())
+        StopwatchService sws = new StopwatchService(new AWSDynamoDBPersister())
         def stopwatch0 = sws.start()
-        Instant then = Instant.now()
 
         when:
         def stopwatch1 = sws.findStopwatch(stopwatch0.id)
@@ -59,7 +60,7 @@ class StopwatchServiceSpec extends Specification {
 
     def "get child records"() {
         given:
-        StopwatchService sws = new StopwatchService(new InMemoryList())
+        StopwatchService sws = new StopwatchService(new AWSDynamoDBPersister())
         def parent = sws.start()
         10.times {
             sws.stop(parent.id)
