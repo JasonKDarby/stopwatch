@@ -1,13 +1,14 @@
 language: groovy
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 install: gradle assemble
-
 before_script:
-  - gradle run &
-  - sleep 3
-
+- gradle run &
+- sleep 3
 script:
-  - gradle test -i
-  - gradle integrationTest -i
+- gradle test -i
+- gradle integrationTest -i
+env:
+  global:
+  - secure: lOA5UL+VG/grFlmDVm3qrap/2uFAUKAFQYnlTVyFklM/hYrxYSq5GxO3W32RvY0tMqwDXVwbEjMqGoj88GUXFlPhjc9UiDmT9C7ihDOr5Jg79S9Afdp/KVaJs758iV7JJTkMNb1ac5V8jH/Ve8foNIUGsBQzIr08R1FjfTBl7jaTrhAjMc66cihsWGl4Ytf5GT0Rm1SWtTB6woPQbsYO7x3UOe+9K5snjDvyKCZISdmURC/wrcEAfHaKtkW2FGxPyqrvNuQ4ZGn3KMCFQ44LcmqB6ndMYZNW5EnLqqfDOqKKFDdNdaTNvXhElw6iHto9Mt3PpNZAmJEAt2ta7kekP5Jm1j1txY1E9WkbAb2rtmmsZHGn5Qqok0AoZNuyUyhvmOYJ/J0v32im2NzTI4xZrZrXHJ7qakYIiAh3X5reu/tpnRbMkHeOAHWWQz6+ST8k3Fd8JPtf84Pf/R8D4mPj2L/koWLuwsV630nsJDEUJ7HNMncJu2x3nfG/GubAMHp0hY7IMZDdr2ltHZvlA/a8oDNTX5bN/YzfapLJPlVIQfAElj2d7sa9mRZjqM7QXqhtFRFIVg5tGvTn5tXrmjBGdaP+pyS+pyLV0oBtBEg2MrkA4tMy6v40y471AWNcClIZfjltVXgN4wkjsCQLNWImhdaZq3t+QFTr9q4QL5s7rhM=
+  - secure: uay91wckKKexOYy1WIGt6Vsl35V/CUrtp4FgLZqD6OQ2Jm2+RV0dGt2V2V5MIG1MLHCWRCvllo4QV23Nv82h9eo8lACc8+l/sYmmABzgSmcUVDcAvVXkc5AT4CyoBjXAdmQWgtlVhelao22sh1bRuLSlIpcVhcLuMKkiV3/yeYOuVlxQgJnCr7cPytzwEKqs//EEEcoRwJOlckumHeeJHbISLpU38bh+3kzlt7sWhkiu9+JI1Dwf0MnyLT/i757y/V+/IDIUr4fX7YkZh1++VXW/VUQhJqbS+v0oCTmnXijRq+OgEu8c+8psKHeJuNdIz31qYa9vdN/PXQhtNZ8AJs88Ld36frZA2Jckc8zD5r82SBMxz4blXYjMXzEF+hd5Tc6eSV8JM0GRTiRpBRVoy4UOu+mXdAoPkkc6ciw8JxPpgPAzEtKxhiw0fc7oCBEQgcHGDQ5iBudyfKJ1w+pYi4U2L7McDh4oj4YGoEdyLxhr6JncKUNzRVGP838U7JfxaYNo2OZuKxJ+3/GN8JDaMHYSv3bIDtI131q6sbzhSOiiGfPaz1Fg4F+gPUKqxrwNNuqpiHK9mWionbZz+TaMmYQORaODdoPPTg2I45TcHSujVM6ykDLB2s9rZG9Zo/5CS16O7brOlV+7NBDwJujNp1QjTgSfQrn4kVs218bdRHY=
