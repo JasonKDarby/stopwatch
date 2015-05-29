@@ -1,13 +1,12 @@
 package me.jdarby.stopwatch.persisters
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.document.Item
 import com.amazonaws.services.dynamodbv2.document.ItemCollection
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome
 import com.amazonaws.services.dynamodbv2.document.Table
-import com.google.common.base.Stopwatch
 import me.jdarby.stopwatch.StopwatchRecord
 
 import java.time.Instant
@@ -18,7 +17,7 @@ import java.time.Instant
 class AWSDynamoDBPersister implements Persister {
 
     DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
-            new ProfileCredentialsProvider()))
+            new EnvironmentVariableCredentialsProvider()))
     Table stopwatches = dynamoDB.getTable('Stopwatch')
 
     @Override
