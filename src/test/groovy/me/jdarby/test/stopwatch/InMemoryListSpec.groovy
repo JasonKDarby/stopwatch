@@ -1,7 +1,10 @@
 package me.jdarby.test.stopwatch
 
+import me.jdarby.stopwatch.StopwatchRecord
 import me.jdarby.stopwatch.persisters.InMemoryList
 import spock.lang.Specification
+
+import java.time.Instant
 
 /**
  * Created by jdarby on 5/22/15.
@@ -12,26 +15,31 @@ class InMemoryListSpec extends Specification {
 
     def "find a thing"() {
         given:
-        inMemoryList << 5
-
+        StopwatchRecord initial = [id: '5', startTime: Instant.now()] as StopwatchRecord
+        inMemoryList.addRecord(initial)
         when:
-        def found = inMemoryList.find { it == 5 }
+        def found = inMemoryList.getById('5')
 
         then:
-        found == 5
+        found == initial
     }
 
     def "find a bunch of things"() {
         given:
-        inMemoryList << 5
-        inMemoryList << 6
-        inMemoryList << 7
+        def records = [
+            [id: '5', startTime: Instant.now(), parentId: '8'] as StopwatchRecord,
+            [id: '6', startTime: Instant.now(), parentId: '8'] as StopwatchRecord,
+            [id: '7', startTime: Instant.now(), parentId: '8'] as StopwatchRecord
+        ]
+        records.each {
+            inMemoryList.addRecord(it)
+        }
 
         when:
-        def found = inMemoryList.findAll { it <= 6 }
+        def found = inMemoryList.getChildrenByParentId('8')
 
         then:
-        found == [5, 6]
+        found == records
     }
 
 }

@@ -16,7 +16,9 @@ class StopwatchSpec extends Specification {
 
     def "create a stopwatch start record"() {
         when:
+        def localStartTime = Instant.now()
         def resp = client.post([:])
+        def localDuration = ChronoUnit.SECONDS.between(localStartTime, Instant.now())
         def start = resp.data
 
         then:
@@ -24,7 +26,10 @@ class StopwatchSpec extends Specification {
         resp.status == 200
 
         UUID.fromString(start.id)
-        ChronoUnit.SECONDS.between(Instant.parse(start.startTime), Instant.now()) <= 1
+
+        and: "remote start time is within my local start time and the response time"
+        //can I do better than this?
+        ChronoUnit.SECONDS.between(localStartTime, Instant.parse(start.startTime)) <= localDuration
     }
 
     def "create a stopwatch stop record"() {
