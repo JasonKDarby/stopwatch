@@ -1,13 +1,18 @@
 language: groovy
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 install: gradle assemble
-
 before_script:
-  - gradle run &
-  - sleep 3
-
+- gradle run &
+- sleep 3
 script:
-  - gradle test -i
-  - gradle integrationTest -i
+- gradle test -i
+- gradle integrationTest -i
+deploy:
+  provider: heroku
+  api_key:
+    secure: PKV4qHLRA6CHkuGSjL051OKyXsJfOp8ekxj45DWQD5qhwx9LtKUHVERjg3sUsNpY3uYKwdVrXRhTNsaCtoV24Sz95rcY9/xpulCVOhudrDUnpO+lpkfAdP1EbnwsGVNq0rgGsccxqVUekqloFGVJUNCalS3AZChXA1RZ/GRgZLoXlDe3qdtyDpTd+Xl7DFbp7vifLAc35pNRn2vWbudP+7U5qe4G7HZe3hOIF+CQl3tExjbGySJogy7YkZydGGbKXBRcdLrOpf1KLnMJWXzYjr1XI8TBt0TfIt6PeK5bEXYjhpXdbz40W1g8t7/HdeRhzKbaiqpKQULEkzDF8yY4kJtimUFjlPZZDm6KlmPRKVeD5Cdr3MVhS2ACNABUBxRMMofWDzl8mdUK0rkSkQSmgftF3jee2EkmpyLVAvCEBsygIiM0tgL1rX8SCsg8gYbntkFBfZSP3zhi6X/0XKW4IoMQgaMTFc1BW5XAPuScjHdhQgcSEklNSQVrZwXdh8uOBFKKbbaaOWjOvkS5E7XrCGsXNWJ9yUYHo5QwzYN/KlJZNr2p0ccWm4C7BMFs0BJwqwdN+7/JS30nnmiUvY6Daw1HkiGfmIBxuLVmmlodhaC8j1757WbZKmOirCfIVbSISEXIMLFikjvEwiV2+ACjFrcN5ZPF5PvXhnm5N97ALMw=
+  app: stopwatch-microservice
+  on:
+    repo: JasonKDarby/stopwatch
+    branch: master
