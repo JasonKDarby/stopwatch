@@ -1,27 +1,31 @@
 package me.jdarby.integrationtest.stopwatch
 
-import groovyx.net.http.RESTClient
+import groovy.json.JsonSlurper
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import ratpack.test.http.TestHttpClient
+import spock.lang.AutoCleanup
 import spock.lang.Specification
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import spock.lang.Shared
 
 class StopwatchSpec extends Specification {
 
-    @Shared
-    private def restUrl = "http://localhost:5050/api/"
+    @AutoCleanup def aut = new GroovyRatpackMainApplicationUnderTest()
 
-    private RESTClient client = new RESTClient(restUrl)
+    @Delegate TestHttpClient client0 = TestHttpClient.testHttpClient(aut)
+
+    def slurper = JsonSlurper.newInstance()
+    def json = { slurper.parseText(it) }
 
     def "create a stopwatch start record"() {
         when:
-        def resp = client.post([:])
-        def start = resp.data
+        post 'api'
+        def start = json(response.body.text)
 
         then:
-        resp.contentType == 'application/json'
-        resp.status == 200
+        response.headers.'content-type' == 'application/json'
+        response.status.code == 200
 
         UUID.fromString(start.id)
         ChronoUnit.SECONDS.between(Instant.parse(start.startTime), Instant.now()) <= 1
@@ -29,15 +33,16 @@ class StopwatchSpec extends Specification {
 
     def "create a stopwatch stop record"() {
         given:
-        def start = client.post([:]).data
+        post 'api'
+        def start = json(response.body.text)
 
         when:
-        def resp = client.post(path: "${start.id}")
-        def stop = resp.data
+        post "api/${start.id}"
+        def stop = json(response.body.text)
 
         then:
-        resp.contentType == 'application/json'
-        resp.status == 200
+        response.headers.'content-type' == 'application/json'
+        response.status.code == 200
 
         UUID.fromString(stop.id)
         stop.startTime == start.startTime
@@ -47,20 +52,24 @@ class StopwatchSpec extends Specification {
 
     def "get start and stop records"() {
         given:
-        def start = client.post([:]).data
-        def stop = client.post(path: "${start.id}").data
+        post 'api'
+        def start = json(response.body.text)
+        post "api/${start.id}"
+        def stop = json(response.body.text)
 
         when:
-        def resp0 = client.get(path: "${start.id}")
-        def resp1 = client.get(path: "${stop.id}")
-        def start0 = resp0.data
-        def stop0 = resp1.data
+        get "api/${start.id}"
+        def resp0 = response
+        def start0 = json(response.body.text)
+        get "api/${stop.id}"
+        def resp1 = response
+        def stop0 = json(response.body.text)
 
         then:
-        resp0.contentType == 'application/json'
-        resp1.contentType == 'application/json'
-        resp0.status == 200
-        resp1.status == 200
+        resp0.headers.'content-type' == 'application/json'
+        resp1.headers.'content-type' == 'application/json'
+        resp0.status.code == 200
+        resp1.status.code == 200
 
         UUID.fromString(start0.id)
         UUID.fromString(stop0.id)
@@ -74,14 +83,15 @@ class StopwatchSpec extends Specification {
 
     def "get children of a stopwatch"() {
         given:
-        def parent = client.post([:]).data
+        post 'api'
+        def parent = json(response.body.text)
         10.times {
-            client.post(path: "${parent.id}")
+            post "api/${parent.id}"
         }
 
         when:
-        def children = client.get(path: "${parent.id}/children").data
-        println children
+        get "api/${parent.id}/children"
+        def children = json(response.body.text)
 
         then:
         children.size == 10

@@ -4,10 +4,6 @@ jdk:
 
 install: gradle assemble
 
-before_script:
-  - gradle run &
-  - sleep 3
-
 script:
   - gradle test -i
   - gradle integrationTest -i
