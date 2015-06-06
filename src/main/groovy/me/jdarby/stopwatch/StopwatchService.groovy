@@ -15,15 +15,15 @@ class StopwatchService<P extends Persister> {
         this.persister = persister
     }
 
-    def start() {
-        def stopwatch = [id: UUID.randomUUID().toString(), startTime: Instant.now()]
-        persister << stopwatch
+    StopwatchRecord start() {
+        StopwatchRecord stopwatch = [id: UUID.randomUUID().toString(), startTime: Instant.now()]
+        persister.addRecord(stopwatch)
         stopwatch
     }
 
     //TODO: return value is in milliseconds for no good reason
-    def stop(String id) {
-        def stopwatch0 = persister.find { it.id == id && it.endTime == null }
+    StopwatchRecord stop(String id) {
+        def stopwatch0 = persister.getById(id)
         if(stopwatch0 == null) return null
         Instant endTime = Instant.now()
         def stopwatch1 = [
@@ -33,18 +33,18 @@ class StopwatchService<P extends Persister> {
                 duration: ChronoUnit.MILLIS.between(stopwatch0.startTime, endTime),
                 parentId: stopwatch0.id
         ]
-        persister << stopwatch1
+        persister.addRecord(stopwatch1 as StopwatchRecord)
         stopwatch1
     }
 
     //TODO: this should either just return null (or equivalent (option?)) or throw an error
-    def findStopwatch(String id) {
-        persister.find { it.id == id }
+    StopwatchRecord findStopwatch(String id) {
+        persister.getById(id)
     }
 
-    def findChildren(String parentId) {
+    List<StopwatchRecord> findChildren(String parentId) {
         if(parentId == null) return null
-        persister.findAll { it.parentId == parentId }
+        persister.getChildrenByParentId(parentId)
     }
 
 

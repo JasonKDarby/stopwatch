@@ -1,14 +1,16 @@
 package me.jdarby.stopwatch.persisters
 
+import me.jdarby.stopwatch.StopwatchRecord
+
 /**
  * Created by jdarby on 5/22/15.
  */
 interface Persister {
 
-    def leftShift(def thing)
+    def addRecord(StopwatchRecord stopwatchRecord)
 
-    def find(Closure c)
+    def getById(String id)
 
-    def findAll(Closure c)
+    def getChildrenByParentId(String id)
 
 }

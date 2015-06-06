@@ -1,7 +1,8 @@
 import me.jdarby.stopwatch.StopwatchModule
+import me.jdarby.stopwatch.StopwatchRecord
 import me.jdarby.stopwatch.StopwatchService
-import me.jdarby.stopwatch.renderers.ListRenderer
-import me.jdarby.stopwatch.renderers.MapRenderer
+import me.jdarby.stopwatch.renderers.StopwatchRecordListRenderer
+import me.jdarby.stopwatch.renderers.StopwatchRecordRenderer
 import ratpack.registry.Registries
 import static ratpack.groovy.Groovy.ratpack
 
@@ -13,8 +14,8 @@ ratpack {
 
     handlers { StopwatchService sws ->
 
-        register(Registries.just(new MapRenderer()))
-        register(Registries.just(new ListRenderer()))
+        register(Registries.just(new StopwatchRecordRenderer()))
+        register(Registries.just(new StopwatchRecordListRenderer()))
 
         assets "public"
 
@@ -23,7 +24,7 @@ ratpack {
             handler(":id/children") {
                 byMethod {
                     get {
-                        List children = sws.findChildren(pathTokens["id"]) ?: clientError(404)
+                        List<StopwatchRecord> children = sws.findChildren(pathTokens["id"]) ?: clientError(404)
                         response.contentType('application/json')
                         render children
                     }
@@ -34,12 +35,12 @@ ratpack {
 
                 byMethod {
                     get {
-                        Map stopwatch = sws.findStopwatch(pathTokens["id"]) ?: clientError(404)
+                        StopwatchRecord stopwatch = sws.findStopwatch(pathTokens["id"]) ?: clientError(404)
                         response.contentType('application/json')
                         render stopwatch
                     }
                     post {
-                        Map stopwatch = sws.stop(pathTokens["id"]) ?: clientError(404)
+                        StopwatchRecord stopwatch = sws.stop(pathTokens["id"]) ?: clientError(404)
                         response.contentType('application/json')
                         render stopwatch
                     }
@@ -49,7 +50,7 @@ ratpack {
             handler {
                 byMethod {
                     post {
-                        Map stopwatch = sws.start()
+                        StopwatchRecord stopwatch = sws.start()
                         response.contentType('application/json')
                         render stopwatch
                     }
