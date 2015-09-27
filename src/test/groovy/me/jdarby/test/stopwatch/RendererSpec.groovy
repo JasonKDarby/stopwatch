@@ -29,10 +29,12 @@ class RendererSpec extends Specification {
 
     def "renderers fit into handlers properly"() {
         given:
-        def app = GroovyEmbeddedApp.build {
+        def app = GroovyEmbeddedApp.of {
             handlers {
-                register(renderer.register())
-                handler {
+                register {
+                    add renderer
+                }
+                get {
                     render(renderable)
                 }
             }
@@ -45,7 +47,7 @@ class RendererSpec extends Specification {
         }
 
         then:
-        response.statusCode == 200
+        response.status.code == 200
         response.body.text == expectedText
 
         where:

@@ -3,11 +3,11 @@ language: groovy
 jdk:
 - oraclejdk8
 
-install: gradle assemble
+install: ./gradlew assemble
 
 script:
-- gradle test -i
-- gradle integrationTest -i
+- ./gradlew test -i
+- ./gradlew integrationTest -i
 
 deploy:
   provider: heroku
